@@ -7,8 +7,8 @@ Este documento contém os comandos básicos para clonar este repositório, const
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-cd SEU_REPOSITORIO
+git clone https://github.com/CrepaldiZeb/Front.git
+cd Front
 ```
 
 ### 2. Iniciar o container
