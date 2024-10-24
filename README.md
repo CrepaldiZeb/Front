@@ -9,6 +9,10 @@ Este documento contém os comandos básicos para clonar este repositório, const
 ```bash
 git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
 cd SEU_REPOSITORIO
+```
+
+### 2. Iniciar o container
+```bash
 docker build -t front .
 docker run -d -p 80:80 --name front-container front
 ``` 
