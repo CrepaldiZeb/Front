@@ -1,49 +1,24 @@
-# Estágio de build
-FROM node:20-alpine as build
+# Utilizar a imagem oficial do Python como base
+FROM python:3.11-slim
 
-# Define o diretório de trabalho
+# Definir o diretório de trabalho no contêiner
 WORKDIR /app
 
-# Copia apenas os arquivos de configuração primeiro
-# Isso ajuda a otimizar o cache das camadas Docker
-COPY package*.json ./
-COPY tsconfig.json ./
+# Copiar o arquivo de requisitos para o contêiner
+COPY requirements.txt .
 
-# Instala dependências específicas
-RUN npm install --production=false \
-    loader-utils@3.2.1 \
-    react@18.2.0 \
-    react-dom@18.2.0 \
-    react-scripts@5.0.1 \
-    react-hook-form@7.53.0 \
-    axios@1.7.7 \
-    react-router-dom@6.26.2 \
-    && npm install --save-dev \
-    @types/react@18.2.38 \
-    @types/react-dom@18.2.15 \
-    typescript@4.4.4
+# Instalar as dependências
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o restante do código fonte
-COPY public/ public/
-COPY src/ src/
+# Copiar o restante do código da aplicação para o contêiner
+COPY . .
 
-# Gera o build de produção
-RUN npm run build
+# Expor a porta que o Flask usará
+EXPOSE 5000
 
-# Estágio de produção usando Nginx
-FROM nginx:1.25-alpine
+# Definir variáveis de ambiente
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=production
 
-# Copia a configuração do nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copia apenas os arquivos de build necessários
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Expõe a porta 80
-EXPOSE 80
-
-# Define variáveis de ambiente para produção
-ENV NODE_ENV=production
-
-# Comando para iniciar o Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Comando para iniciar o aplicativo Flask
+CMD ["flask", "run", "--host=0.0.0.0"]
